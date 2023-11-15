@@ -1,4 +1,4 @@
-import numpy as np
+import jax.numpy as jnp
 import matplotlib.pyplot as plt
 
 
@@ -21,8 +21,8 @@ class GP:
         self.sigma_n = sigma_n
 
         # Prior mean and covariance on test points
-        self.mu = np.zeros(len(X_s))
-        self.cov = kernel(X_s, X_s) + sigma_n**2 * np.eye(len(X_s))
+        self.mu = jnp.zeros(len(X_s))
+        self.cov = kernel(X_s, X_s) + sigma_n**2 * jnp.eye(len(X_s))
 
     def predict(self, X_s):
         """
@@ -36,10 +36,10 @@ class GP:
             (n x n) matrix of predicted covariances
         """
         # Lower triangular solve to obtain alpha and thus posterior mean
-        L_cov = np.linalg.cholesky(
-            self.kernel(self.X, self.X) + self.sigma_n**2 * np.eye(len(self.X))
+        L_cov = jnp.linalg.cholesky(
+            self.kernel(self.X, self.X) + self.sigma_n**2 * jnp.eye(len(self.X))
         )
-        alpha = np.linalg.solve(L_cov.T, np.linalg.solve(L_cov, self.Y))
+        alpha = jnp.linalg.solve(L_cov.T, jnp.linalg.solve(L_cov, self.Y))
         K_s = self.kernel(self.X, X_s)
         mu_s = K_s.T @ alpha
         self.mu = mu_s.reshape(
@@ -48,20 +48,20 @@ class GP:
 
         # Compute posterior covariance matrix
         K_ss = self.cov
-        v = np.linalg.solve(L_cov, K_s)
+        v = jnp.linalg.solve(L_cov, K_s)
         cov_s = K_ss - v.T @ v
         self.cov = cov_s
 
         # Compute log marginal likelihood
         log_likelihood = (
             -0.5 * self.Y.T @ alpha
-            - np.sum(np.log(np.diag(L_cov)))
-            - len(self.X) / 2 * np.log(2 * np.pi)
+            - jnp.sum(jnp.log(jnp.diag(L_cov)))
+            - len(self.X) / 2 * jnp.log(2 * jnp.pi)
         )
         return mu_s, cov_s, log_likelihood
 
     def plot(self, train_x=None, train_y=None, samples=[]):
-        confidence_interval = 1.96 * np.sqrt(np.diag(self.cov))
+        confidence_interval = 1.96 * jnp.sqrt(jnp.diag(self.cov))
 
         plt.fill_between(
             self.X_s.flatten(),

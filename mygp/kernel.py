@@ -1,4 +1,4 @@
-import numpy as np
+import jax.numpy as jnp
 
 
 def rbf(X, Y, l=1.0, sigma_f=1.0):
@@ -15,11 +15,11 @@ def rbf(X, Y, l=1.0, sigma_f=1.0):
         (m x n) matrix of RBF kernel values
     """
     distXY = (
-        np.sum(X**2, axis=1).reshape(-1, 1)
-        + np.sum(Y**2, axis=1)
-        - 2 * np.dot(X, Y.T)
+        jnp.sum(X**2, axis=1).reshape(-1, 1)
+        + jnp.sum(Y**2, axis=1)
+        - 2 * jnp.dot(X, Y.T)
     )
-    return sigma_f**2 * np.exp(-0.5 / l**2 * distXY)
+    return sigma_f**2 * jnp.exp(-0.5 / l**2 * distXY)
 
 
 def linear(X, Y, sigma_b=0.0, sigma_v=1.0, c=0.0):
@@ -48,8 +48,8 @@ def rq(X, Y, l=1.0, sigma=1.0, alpha=1.0):
         alpha: alpha parameter for rational quadratic kernel
     """
     distXY = (
-        np.sum(X**2, axis=1).reshape(-1, 1)
-        + np.sum(Y**2, axis=1)
-        - 2 * np.multiply(X, Y.T)
+        jnp.sum(X**2, axis=1).reshape(-1, 1)
+        + jnp.sum(Y**2, axis=1)
+        - 2 * jnp.multiply(X, Y.T)
     )
     return sigma**2 * (1 + distXY / (2 * alpha * l**2)) ** (-alpha)
