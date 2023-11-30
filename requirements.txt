@@ -3,3 +3,5 @@ torch==2.0.1
 scipy
 matplotlib
 jax[cpu]==0.4.20
+optax
+flax
