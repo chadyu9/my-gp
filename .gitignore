@@ -1,4 +1,4 @@
 venv
 .flake8
 **egg**
-**/__pycache__/**
+__pycache__/
